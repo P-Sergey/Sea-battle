@@ -60,26 +60,54 @@ opponentField.onclick = function(event) {
   }
 }
 
-let currentElem = null;
+let coordList = document.createElement('div');
+document.body.append(coordList);
 
-playerField.onmouseover = function(event) {
-  if (currentElem) return;
-  let target = event.target.closest('td');
-  if (!target) return;
-  if (!playerField.contains(target)) return;
-  currentElem = target;
-  target.style.background = 'pink';
-};
-
-playerField.onmouseout = function(event) {
-  if (!currentElem) return;
-  let relatedTarget = event.relatedTarget;
-
-  while (relatedTarget) {
-    if (relatedTarget == currentElem) return;
-    relatedTarget = relatedTarget.parentNode;
+//placing ships
+playerField.onclick = function(event) {
+  let target = event.target;
+  let targetX = target.cellIndex;
+  let targetY = target.parentNode.rowIndex;
+  let fourDecksShips = document.getElementsByClassName('fourDecks');
+  let threeDecksShips = document.getElementsByClassName('threeDecks');
+  let twoDecksShips = document.getElementsByClassName('twoDecks');
+  let oneDeckShips = document.getElementsByClassName('oneDeck');
+  
+  function placeShip(cells, shipClass) {
+    if ((targetX !== 0) && (targetY !== 0) &&
+      ((targetX + cells <= playerField.rows.length) &&
+      !target.classList.contains('ship'))) {      
+      for (let i = 0; i < cells; i++) {
+        if (playerField.rows[targetY].cells[targetX + cells] === undefined) continue;
+        else if ((!playerField.rows[targetY].cells[targetX + cells].classList.contains('ship')) &&
+        !playerField.rows[targetY].cells[targetX - 1].classList.contains('ship')) {
+          playerField.rows[targetY].cells[targetX + i].classList.add('ship', shipClass);
+          playerField.rows[targetY - 1].cells[targetX + i].classList.add('ship');
+          playerField.rows[targetY + 1].cells[targetX + i].classList.add('ship');
+        }
+      }
+    }
+  }
+  //placing 4-decks ship
+  if (fourDecksShips.length < 4) {
+    placeShip(4, 'fourDecks');
   }
 
-  currentElem.style.background = '';
-  currentElem = null;
-};
+  //placing 3-decks ships
+  else if (threeDecksShips.length < 6) {
+    placeShip(3, 'threeDecks');
+  }
+
+  //placing 2-decks ships
+  else if (twoDecksShips.length < 6) {
+    placeShip(2, 'twoDecks');
+  }
+
+  //placing 1-deck ships
+  else if (oneDeckShips.length < 4) {
+    placeShip(1, 'oneDeck');
+  }
+  coordList.innerHTML = targetX + ' : ' + targetY ;
+
+
+}

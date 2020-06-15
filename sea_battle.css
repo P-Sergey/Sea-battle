@@ -41,19 +41,19 @@
   background-color: steelblue;
 }
 
-.shipOne {
+.oneDeck {
   background-color: gray;
 }
 
-.shipTwo {
-  background-color: green;
+.twoDecks {
+  background-color: lightseagreen;
 }
 
-.shipThree {
-  background-color: maroon;
+.threeDecks {
+  background-color: lightcoral;
 }
 
-.shipFour {
+.fourDecks {
   background-color: orange;
 }
 
