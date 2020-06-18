@@ -1,13 +1,13 @@
 .playerField {
   width: 300px;
-  height: 300px;    
+  height: 300px;
   border-spacing: 0px;
   table-layout: fixed;
 }
 
 .opponentField {
   width: 300px;
-  height: 300px;    
+  height: 300px;
   border-spacing: 0px;
   table-layout: fixed;
 }
@@ -46,15 +46,15 @@
 }
 
 .twoDecks {
-  background-color: lightseagreen;
+  background-color: green;
 }
 
 .threeDecks {
-  background-color: lightcoral;
+  background-color: chocolate;
 }
 
 .fourDecks {
-  background-color: orange;
+  background-color: darkorange;
 }
 
 .damaged {
@@ -68,4 +68,8 @@
   border: 1px solid gray;
   justify-content: center;
   align-items: center;
+}
+
+.nearShip {
+  background-color: lightskyblue;
 }
