@@ -68,13 +68,23 @@ opponentField.onclick = function clickForShoot(event) {
   }
 };
 
-const coordList = document.createElement('div');
-document.body.append(coordList);
-
 const message = document.createElement('span');
 message.classList.add('message');
 message.innerHTML = 'Place 4-decks ship';
 playerField.after(message);
+
+let direction = true;
+function switchDirection() {
+  direction = !direction;
+  if (direction) {
+    button.innerHTML = "Ship's direction: horisontal";
+  } else button.innerHTML = "Ship's direction: vertical";
+}
+
+const button = document.createElement('button');
+document.body.append(button);
+button.addEventListener('click', switchDirection);
+button.innerHTML = "Ship's direction: horisontal";
 
 playerField.onclick = function clickForShip(event) {
   const { target } = event;
@@ -116,7 +126,12 @@ playerField.onclick = function clickForShip(event) {
         ) {
           aboveShip.classList.add('nearShip');
         }
-        if (belowShip !== undefined && belowShip.cells[targetX - 1 + k] !== undefined) {
+        if (
+          belowShip !== undefined &&
+          belowShip.cells[targetX - 1 + k] !== undefined &&
+          !belowShip.cells[targetX - 1 + k].classList.contains('firstRow') &&
+          !belowShip.cells[targetX - 1 + k].classList.contains('firstColumn')
+        ) {
           belowShip.cells[targetX - 1 + k].classList.add('nearShip');
         }
         if (!beforeShip.classList.contains('firstColumn')) {
@@ -188,70 +203,24 @@ playerField.onclick = function clickForShip(event) {
     }
   }
 
-  // horisontal
-  // placing 4-decks ship
+  function manualPlacing(decks, shipClass, classCounter, count) {
+    if (direction) {
+      placeShipHorisontal(decks, shipClass);
+    } else placeShipVertical(decks, shipClass);
+    if (classCounter.length === count) {
+      message.innerHTML = `Place ${decks - 1}-decks ship`;
+      if (decks - 1 === 0) {
+        message.innerHTML = "All player's ships placed";
+      }
+    }
+  }
   if (fourDecksShips.length < 4) {
-    placeShipHorisontal(4, 'fourDecks');
-    if (fourDecksShips.length === 4) {
-      message.innerHTML = 'Place 3-decks ship';
-    }
+    manualPlacing(4, 'fourDecks', fourDecksShips, 4);
+  } else if (threeDecksShips.length < 6) {
+    manualPlacing(3, 'threeDecks', threeDecksShips, 6);
+  } else if (twoDecksShips.length < 6) {
+    manualPlacing(2, 'twoDecks', twoDecksShips, 6);
+  } else if (oneDeckShips.length < 4) {
+    manualPlacing(1, 'oneDeck', oneDeckShips, 4);
   }
-
-  // placing 3-decks ships
-  else if (threeDecksShips.length < 6) {
-    placeShipHorisontal(3, 'threeDecks');
-    if (threeDecksShips.length === 6) {
-      message.innerHTML = 'Place 2-decks ship';
-    }
-  }
-
-  // placing 2-decks ships
-  else if (twoDecksShips.length < 6) {
-    placeShipHorisontal(2, 'twoDecks');
-    if (twoDecksShips.length === 6) {
-      message.innerHTML = 'Place 1-deck ship';
-    }
-  }
-
-  // placing 1-deck ships
-  else if (oneDeckShips.length < 4) {
-    placeShipHorisontal(1, 'oneDeck');
-    if (oneDeckShips.length === 4) {
-      message.innerHTML = "All player's ships placed";
-    }
-  }
-
-  // vertical
-  // placing 4-decks ship
-  if (fourDecksShips.length < 4) {
-    placeShipVertical(4, 'fourDecks');
-    if (fourDecksShips.length === 4) {
-      message.innerHTML = 'Place 3-decks ship';
-    }
-  }
-
-  // placing 3-decks ships
-  else if (threeDecksShips.length < 6) {
-    placeShipVertical(3, 'threeDecks');
-    if (threeDecksShips.length === 6) {
-      message.innerHTML = 'Place 2-decks ship';
-    }
-  }
-
-  // placing 2-decks ships
-  else if (twoDecksShips.length < 6) {
-    placeShipVertical(2, 'twoDecks');
-    if (twoDecksShips.length === 6) {
-      message.innerHTML = 'Place 1-deck ship';
-    }
-  }
-
-  // placing 1-deck ships
-  else if (oneDeckShips.length < 4) {
-    placeShipVertical(1, 'oneDeck');
-    if (oneDeckShips.length === 4) {
-      message.innerHTML = "All player's ships placed";
-    }
-  }
-  coordList.innerHTML = `${targetX} : ${targetY}`;
 };
