@@ -37,8 +37,17 @@
   user-select: none;
 }
 
-.highlight {
-  background-color: steelblue;
+.message {
+  display: flex;
+  width: 200px;
+  height: 40px;
+  border: 1px solid gray;
+  justify-content: center;
+  align-items: center;
+}
+
+.nearShip {
+  background-color: lightskyblue;
 }
 
 .oneDeck {
@@ -61,15 +70,6 @@
   background-color: crimson;
 }
 
-.message {
-  display: flex;
-  width: 200px;
-  height: 40px;
-  border: 1px solid gray;
-  justify-content: center;
-  align-items: center;
-}
-
-.nearShip {
-  background-color: lightskyblue;
+.destroyed {
+  background-color: black;
 }

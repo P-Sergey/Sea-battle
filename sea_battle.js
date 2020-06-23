@@ -10,6 +10,7 @@ const fourDecksShips = document.getElementsByClassName('fourDecks');
 const threeDecksShips = document.getElementsByClassName('threeDecks');
 const twoDecksShips = document.getElementsByClassName('twoDecks');
 const oneDeckShips = document.getElementsByClassName('oneDeck');
+let shipId = 0;
 
 const message = document.createElement('span');
 message.classList.add('message');
@@ -78,37 +79,6 @@ function switchDirection() {
   } else button.innerHTML = "Ship's direction: vertical";
 }
 
-//manual ships placing
-playerField.onclick = function manualPlacing(event) {
-  const { target } = event;
-  const targetX = target.cellIndex;
-  const targetY = target.parentNode.rowIndex;
-
-  if (fourDecksShips.length < 4) {
-    shipsConfig(playerField, 4, 'fourDecks', fourDecksShips, 4, targetX, targetY);
-  } else if (threeDecksShips.length < 6) {
-    shipsConfig(playerField, 3, 'threeDecks', threeDecksShips, 6, targetX, targetY);
-  } else if (twoDecksShips.length < 6) {
-    shipsConfig(playerField, 2, 'twoDecks', twoDecksShips, 6, targetX, targetY);
-  } else if (oneDeckShips.length < 4) {
-    shipsConfig(playerField, 1, 'oneDeck', oneDeckShips, 4, targetX, targetY);
-  }
-};
-
-//ships configuration on field
-function shipsConfig(field, decks, shipClass, classCounter, count, coordX, coordY) {
-  if (direction) {
-    placeShipHorisontal(field, decks, shipClass, coordX, coordY);
-  } else placeShipVertical(field, decks, shipClass, coordX, coordY);
-  if (classCounter.length === count) {
-    message.innerHTML = `Place ${decks - 1}-decks ship`;
-    if (decks - 1 === 0) {
-      message.innerHTML = "All player's ships placed";
-      startButton.disabled = false;
-    }
-  }
-}
-
 // placing ships in horisontal direction
 function placeShipHorisontal(field, decks, shipClass, coordX, coordY) {
   const afterShip = field.rows[coordY].cells[coordX + decks - 1];
@@ -123,9 +93,10 @@ function placeShipHorisontal(field, decks, shipClass, coordX, coordY) {
     !afterShip.classList.contains('nearShip') &&
     !afterShip.classList.contains('ship')
   ) {
+    shipId += 1;
     // create ship
     for (let i = 0; i < decks; i++) {
-      field.rows[coordY].cells[coordX + i].classList.add('ship', shipClass);
+      field.rows[coordY].cells[coordX + i].classList.add('ship', shipClass, `${shipId}`);
     }
 
     // create field around ship
@@ -175,9 +146,10 @@ function placeShipVertical(field, decks, shipClass, coordX, coordY) {
     !afterShip.cells[coordX].classList.contains('ship') &&
     !beforeShip.classList.contains('ship')
   ) {
+    shipId += 1;
     // create ship
     for (let i = 0; i < decks; i++) {
-      field.rows[coordY + i].cells[coordX].classList.add('ship', shipClass);
+      field.rows[coordY + i].cells[coordX].classList.add('ship', shipClass, `${shipId}`);
     }
 
     // create field around ship
@@ -217,6 +189,38 @@ function placeShipVertical(field, decks, shipClass, coordX, coordY) {
   }
 }
 
+//manual ships configuration on field
+function shipsConfig(field, decks, shipClass, classCounter, count, coordX, coordY) {
+  if (direction) {
+    placeShipHorisontal(field, decks, shipClass, coordX, coordY);
+  } else placeShipVertical(field, decks, shipClass, coordX, coordY);
+  if (classCounter.length === count) {
+    shipId = 0;
+    message.innerHTML = `Place ${decks - 1}-decks ship`;
+    if (decks - 1 === 0) {
+      message.innerHTML = "All player's ships placed";
+      startButton.disabled = false;
+    }
+  }
+}
+
+//manual ships placing
+playerField.onclick = function manualPlacing(event) {
+  const { target } = event;
+  const targetX = target.cellIndex;
+  const targetY = target.parentNode.rowIndex;
+
+  if (fourDecksShips.length < 4) {
+    shipsConfig(playerField, 4, 'fourDecks', fourDecksShips, 4, targetX, targetY);
+  } else if (threeDecksShips.length < 6) {
+    shipsConfig(playerField, 3, 'threeDecks', threeDecksShips, 6, targetX, targetY);
+  } else if (twoDecksShips.length < 6) {
+    shipsConfig(playerField, 2, 'twoDecks', twoDecksShips, 6, targetX, targetY);
+  } else if (oneDeckShips.length < 4) {
+    shipsConfig(playerField, 1, 'oneDeck', oneDeckShips, 4, targetX, targetY);
+  }
+};
+
 // ships auto-configuratiom on field
 function shipsAutoConfig(field, decks, shipClass, classCounter, count) {
   let targetX = Math.floor(Math.random() * 9 + 1);
@@ -226,6 +230,7 @@ function shipsAutoConfig(field, decks, shipClass, classCounter, count) {
     placeShipHorisontal(field, decks, shipClass, targetX, targetY);
   } else placeShipVertical(field, decks, shipClass, targetX, targetY);
   if (classCounter.length === count) {
+    shipId = 0;
     message.innerHTML = `Place ${decks - 1}-decks ship`;
     if (decks - 1 === 0) {
       message.innerHTML = "All player's ships placed";
