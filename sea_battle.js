@@ -1,48 +1,43 @@
-/* eslint-disable brace-style */
-/* eslint-disable operator-linebreak */
-/* eslint-disable no-plusplus */
 const letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'];
 const playerField = document.getElementById('player');
 const opponentField = document.getElementById('opponent');
-
-const shipClassCounter = document.getElementsByClassName('ship');
 const fourDecksShips = document.getElementsByClassName('fourDecks');
 const threeDecksShips = document.getElementsByClassName('threeDecks');
 const twoDecksShips = document.getElementsByClassName('twoDecks');
 const oneDeckShips = document.getElementsByClassName('oneDeck');
-let shipId = 0;
 
 const message = document.createElement('span');
 message.classList.add('message');
 message.innerHTML = 'Place 4-decks ship';
 playerField.after(message);
 
-const button = document.createElement('button');
-document.body.append(button);
-button.innerHTML = "Ship's direction: horisontal";
-button.addEventListener('click', switchDirection);
-
-const autoButton = document.createElement('button');
-document.body.append(autoButton);
-autoButton.innerHTML = 'Ships auto-placing';
-autoButton.addEventListener('click', playerAutoPlacing);
-
-const startButton = document.createElement('button');
-document.body.append(startButton);
-startButton.disabled = true;
-startButton.innerHTML = 'Start battle';
-startButton.addEventListener('click', aiAutoPlacing);
+function makeButton(id, func, text, status) {
+  const button = document.createElement('button');
+  document.body.append(button);
+  button.setAttribute('id', id);
+  button.disabled = status;
+  button.innerHTML = text;
+  button.addEventListener('click', func);
+}
+makeButton('switchButton', switchDirection, "Ship's direction: horisontal", false);
+makeButton(
+  'autoButton',
+  () => autoPlacing(playerField, 20, 4, 6, 6, 4),
+  'Ships auto-placing',
+  false
+);
+makeButton('startButton', aiAutoPlacing, 'Start battle', true);
 
 // making battle-fields
-for (let i = 0; i < 11; i++) {
+for (let i = 0; i < 11; i += 1) {
   const playerRow = document.createElement('tr');
   const opponentRow = document.createElement('tr');
 
-  for (let k = 0; k < 11; k++) {
+  for (let k = 0; k < 11; k += 1) {
     const playerCell = document.createElement('td');
     const opponentCell = document.createElement('td');
 
-    // remove unnecessary borders
+    // add class to remove unnecessary borders
     if (i === 0) {
       playerCell.classList.add('firstRow');
       opponentCell.classList.add('firstRow');
@@ -54,7 +49,7 @@ for (let i = 0; i < 11; i++) {
     opponentRow.appendChild(opponentCell);
   }
 
-  // remove unnecessary borders
+  // add class to remove unnecessary borders
   playerRow.cells[0].classList.add('firstColumn');
   opponentRow.cells[0].classList.add('firstColumn');
 
@@ -63,7 +58,7 @@ for (let i = 0; i < 11; i++) {
 }
 
 // set coordinate axises
-for (let j = 1; j < playerField.rows.length; j++) {
+for (let j = 1; j < playerField.rows.length; j += 1) {
   playerField.rows[0].cells[j].innerHTML = letters[j - 1];
   playerField.rows[j].cells[0].innerHTML = j;
   opponentField.rows[0].cells[j].innerHTML = letters[j - 1];
@@ -73,10 +68,11 @@ for (let j = 1; j < playerField.rows.length; j++) {
 //ships direction switch
 let direction = true;
 function switchDirection() {
+  const switchButton = document.getElementById('switchButton');
   direction = !direction;
   if (direction) {
-    button.innerHTML = "Ship's direction: horisontal";
-  } else button.innerHTML = "Ship's direction: vertical";
+    switchButton.innerHTML = "Ship's direction: horisontal";
+  } else switchButton.innerHTML = "Ship's direction: vertical";
 }
 
 // placing ships in horisontal direction
@@ -93,14 +89,13 @@ function placeShipHorisontal(field, decks, shipClass, coordX, coordY) {
     !afterShip.classList.contains('nearShip') &&
     !afterShip.classList.contains('ship')
   ) {
-    shipId += 1;
     // create ship
-    for (let i = 0; i < decks; i++) {
-      field.rows[coordY].cells[coordX + i].classList.add('ship', shipClass, `${shipId}`);
+    for (let i = 0; i < decks; i += 1) {
+      field.rows[coordY].cells[coordX + i].classList.add('ship', shipClass);
     }
 
     // create field around ship
-    for (let k = 0; k <= decks + 1; k++) {
+    for (let k = 0; k <= decks + 1; k += 1) {
       const aboveShip = field.rows[coordY - 1].cells[coordX - 1 + k];
       const belowShip = field.rows[coordY + 1];
 
@@ -146,14 +141,13 @@ function placeShipVertical(field, decks, shipClass, coordX, coordY) {
     !afterShip.cells[coordX].classList.contains('ship') &&
     !beforeShip.classList.contains('ship')
   ) {
-    shipId += 1;
     // create ship
-    for (let i = 0; i < decks; i++) {
-      field.rows[coordY + i].cells[coordX].classList.add('ship', shipClass, `${shipId}`);
+    for (let i = 0; i < decks; i += 1) {
+      field.rows[coordY + i].cells[coordX].classList.add('ship', shipClass);
     }
 
     // create field around ship
-    for (let k = 0; k <= decks + 1; k++) {
+    for (let k = 0; k <= decks + 1; k += 1) {
       const rightOfShip = field.rows[coordY - 1 + k];
       const leftOfShip = field.rows[coordY - 1 + k];
 
@@ -189,13 +183,13 @@ function placeShipVertical(field, decks, shipClass, coordX, coordY) {
   }
 }
 
+const startButton = document.getElementById('startButton');
 //manual ships configuration on field
 function shipsConfig(field, decks, shipClass, classCounter, count, coordX, coordY) {
   if (direction) {
     placeShipHorisontal(field, decks, shipClass, coordX, coordY);
   } else placeShipVertical(field, decks, shipClass, coordX, coordY);
   if (classCounter.length === count) {
-    shipId = 0;
     message.innerHTML = `Place ${decks - 1}-decks ship`;
     if (decks - 1 === 0) {
       message.innerHTML = "All player's ships placed";
@@ -230,7 +224,6 @@ function shipsAutoConfig(field, decks, shipClass, classCounter, count) {
     placeShipHorisontal(field, decks, shipClass, targetX, targetY);
   } else placeShipVertical(field, decks, shipClass, targetX, targetY);
   if (classCounter.length === count) {
-    shipId = 0;
     message.innerHTML = `Place ${decks - 1}-decks ship`;
     if (decks - 1 === 0) {
       message.innerHTML = "All player's ships placed";
@@ -241,6 +234,7 @@ function shipsAutoConfig(field, decks, shipClass, classCounter, count) {
 
 // ships auto-placing
 function autoPlacing(field, shipClassAmount, fourDecks, threeDecks, twoDecks, oneDeck) {
+  const shipClassCounter = document.getElementsByClassName('ship');
   while (shipClassCounter.length < shipClassAmount) {
     if (fourDecksShips.length < fourDecks) {
       shipsAutoConfig(field, 4, 'fourDecks', fourDecksShips, 4);
@@ -254,15 +248,12 @@ function autoPlacing(field, shipClassAmount, fourDecks, threeDecks, twoDecks, on
   }
 }
 
-function playerAutoPlacing() {
-  autoPlacing(playerField, 20, 4, 6, 6, 4);
-}
-
 function aiAutoPlacing() {
   autoPlacing(opponentField, 40, 8, 12, 12, 8);
   message.innerHTML = 'Sea-battle started';
 }
 
+//shooting by opponent's field
 opponentField.onclick = function shooting(event) {
   const { target } = event;
 
@@ -272,5 +263,28 @@ opponentField.onclick = function shooting(event) {
     target.classList.contains('ship')
   ) {
     target.classList.add('damaged');
+  } else if (!target.classList.contains('ship')) {
+    target.classList.add('miss');
+    aiShooting();
   }
 };
+
+//shooting by player's field
+function aiShooting() {
+  let targetX = Math.floor(Math.random() * 9 + 1);
+  let targetY = Math.floor(Math.random() * 9 + 1);
+
+  if (
+    !playerField.rows[targetY].cells[targetX].classList.contains('firstRow') &&
+    !playerField.rows[targetY].cells[targetX].classList.contains('firstcolumn') &&
+    !playerField.rows[targetY].cells[targetX].classList.contains('miss') &&
+    !playerField.rows[targetY].cells[targetX].classList.contains('damaged') &&
+    playerField.rows[targetY].cells[targetX].classList.contains('ship')
+  ) {
+    playerField.rows[targetY].cells[targetX].classList.add('damaged');
+    aiShooting();
+  } else if (!playerField.rows[targetY].cells[targetX].classList.contains('ship')) {
+    playerField.rows[targetY].cells[targetX].classList.add('miss');
+    opponentField.onclick;
+  }
+}
