@@ -11,6 +11,7 @@ message.classList.add('message');
 message.innerHTML = 'Place 4-decks ship';
 playerField.after(message);
 
+// creating buttons
 function makeButton(id, func, text, status) {
   const button = document.createElement('button');
   document.body.append(button);
@@ -19,6 +20,7 @@ function makeButton(id, func, text, status) {
   button.innerHTML = text;
   button.addEventListener('click', func);
 }
+
 makeButton('switchButton', switchDirection, "Ship's direction: horisontal", false);
 makeButton(
   'autoButton',
@@ -28,7 +30,7 @@ makeButton(
 );
 makeButton('startButton', aiAutoPlacing, 'Start battle', true);
 
-// making battle-fields
+// creating battle-fields
 for (let i = 0; i < 11; i += 1) {
   const playerRow = document.createElement('tr');
   const opponentRow = document.createElement('tr');
@@ -65,7 +67,7 @@ for (let j = 1; j < playerField.rows.length; j += 1) {
   opponentField.rows[j].cells[0].innerHTML = j;
 }
 
-//ships direction switch
+// ships direction switch
 let direction = true;
 function switchDirection() {
   const switchButton = document.getElementById('switchButton');
@@ -184,7 +186,7 @@ function placeShipVertical(field, decks, shipClass, coordX, coordY) {
 }
 
 const startButton = document.getElementById('startButton');
-//manual ships configuration on field
+// manual ships configuration on field
 function shipsConfig(field, decks, shipClass, classCounter, count, coordX, coordY) {
   if (direction) {
     placeShipHorisontal(field, decks, shipClass, coordX, coordY);
@@ -198,7 +200,7 @@ function shipsConfig(field, decks, shipClass, classCounter, count, coordX, coord
   }
 }
 
-//manual ships placing
+// manual ships placing
 playerField.onclick = function manualPlacing(event) {
   const { target } = event;
   const targetX = target.cellIndex;
@@ -250,41 +252,61 @@ function autoPlacing(field, shipClassAmount, fourDecks, threeDecks, twoDecks, on
 
 function aiAutoPlacing() {
   autoPlacing(opponentField, 40, 8, 12, 12, 8);
+  const opponentShips = opponentField.getElementsByClassName('ship');
+  const opponentNearShip = opponentField.getElementsByClassName('nearShip');
+  let arrShip = Array.from(opponentShips);
+  let arrNearShip = Array.from(opponentNearShip);
+  arrShip.forEach((item) => {
+    item.classList.add('whiteSpace');
+  });
+  arrNearShip.forEach((item) => {
+    item.classList.add('whiteSpace');
+  });
   message.innerHTML = 'Sea-battle started';
-}
 
-//shooting by opponent's field
-opponentField.onclick = function shooting(event) {
-  const { target } = event;
+  // shooting by opponent's field
+  opponentField.onclick = function shooting(event) {
+    const { target } = event;
 
-  if (
-    !target.classList.contains('firstRow') &&
-    !target.classList.contains('firstcolumn') &&
-    target.classList.contains('ship')
-  ) {
-    target.classList.add('damaged');
-  } else if (!target.classList.contains('ship')) {
-    target.classList.add('miss');
-    aiShooting();
-  }
-};
+    if (
+      !target.classList.contains('firstRow') &&
+      !target.classList.contains('firstColumn') &&
+      target.classList.contains('ship')
+    ) {
+      target.classList.remove('whiteSpace');
+      target.classList.add('damaged');
+    }
+    if (
+      !target.classList.contains('ship') &&
+      !target.classList.contains('miss') &&
+      !target.classList.contains('firstRow') &&
+      !target.classList.contains('firstColumn')
+    ) {
+      target.classList.remove('whiteSpace');
+      target.classList.add('miss');
+      aiShooting();
+    }
+  };
 
-//shooting by player's field
-function aiShooting() {
-  let targetX = Math.floor(Math.random() * 9 + 1);
-  let targetY = Math.floor(Math.random() * 9 + 1);
+  // shooting by player's field
+  function aiShooting() {
+    const targetX = Math.round(Math.random() * 9 + 1);
+    const targetY = Math.round(Math.random() * 9 + 1);
+    const targetCell = playerField.rows[targetY].cells[targetX];
 
-  if (
-    !playerField.rows[targetY].cells[targetX].classList.contains('firstRow') &&
-    !playerField.rows[targetY].cells[targetX].classList.contains('firstcolumn') &&
-    !playerField.rows[targetY].cells[targetX].classList.contains('miss') &&
-    !playerField.rows[targetY].cells[targetX].classList.contains('damaged') &&
-    playerField.rows[targetY].cells[targetX].classList.contains('ship')
-  ) {
-    playerField.rows[targetY].cells[targetX].classList.add('damaged');
-    aiShooting();
-  } else if (!playerField.rows[targetY].cells[targetX].classList.contains('ship')) {
-    playerField.rows[targetY].cells[targetX].classList.add('miss');
-    opponentField.onclick;
+    if (
+      !targetCell.classList.contains('firstRow') &&
+      !targetCell.classList.contains('firstColumn') &&
+      !targetCell.classList.contains('ship') &&
+      !targetCell.classList.contains('damaged') &&
+      !targetCell.classList.contains('miss')
+    ) {
+      targetCell.classList.add('miss');
+      opponentField.onclick;
+    }
+    if (targetCell.classList.contains('ship')) {
+      targetCell.classList.add('damaged');
+      aiShooting();
+    }
   }
 }
